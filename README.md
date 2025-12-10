@@ -107,12 +107,19 @@ A visual journey through "Designing Data-Intensive Applications" (Martin Kleppma
 ---
 <img width="1853" height="1079" alt="1 3" src="https://github.com/user-attachments/assets/55ebb26b-9640-4fac-ab8b-0d98d95c845d" />
 
+**Example Architecture**
+* User sends a GET request → checks cache → if miss, queries the database → returns data.
+* Updates (POST requests) update both the database and auxiliary systems like cache and search indexes.
+* Background jobs handle time-consuming tasks asynchronously to avoid blocking user interactions.
+
 **Typical Data System Components**: Modern applications combine multiple specialized tools:
 1. **Application Code** handling business logic
 2. **Relational Databases** (PostgreSQL) for transactional data
 3. **Search Engines** (Elasticsearch) for complex queries
 4. **Message Queues** (RabbitMQ) for asynchronous processing
 5. **Caching Layers** for performance optimization
+
+---
 
 * This chapter establishes the foundational mindset for designing data-intensive applications: there are no universally perfect solutions, only appropriate trade-offs. By understanding reliability patterns, scaling strategies, and maintenance considerations, engineers can make informed decisions about architecture and tool selection based on specific application requirements.
 
