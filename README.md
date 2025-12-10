@@ -11,6 +11,7 @@ A visual journey through "Designing Data-Intensive Applications" (Martin Kleppma
 ## Chapter Overview
 
 <img width="1855" height="1079" alt="1 1" src="https://github.com/user-attachments/assets/fcdbea8c-ab9e-442b-8782-d44ef15e79af" />
+
 **Fundamental Concepts Covered**: This chapter introduces the essential building blocks of modern data systems including storage solutions, processing paradigms, data replication strategies, consistency models, and the trade-offs between SQL and NoSQL approaches. Understanding these fundamentals is crucial for designing robust, scalable applications.
 
 ---
