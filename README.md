@@ -125,4 +125,92 @@ A visual journey through "Designing Data-Intensive Applications" (Martin Kleppma
 
 ---
 
+# Chapter 2: Data Models and Query Languages
 
+## The Central Role of Data Models
+
+<img width="2000" height="1125" alt="2 1" src="https://github.com/user-attachments/assets/1f6fb95a-aa69-465a-b5b4-0cb816cb6051" />
+
+**Why Data Models Matter Most**: The data model is arguably the most critical part of software development because it defines how we conceptualize and interact with our data. A well-designed data model shapes our entire application architecture, determines what queries are efficient or awkward, and influences how we solve business problems.
+
+---
+## Data Model Abstraction Layers
+
+<img width="2000" height="1125" alt="2 2" src="https://github.com/user-attachments/assets/96034d25-d91a-4221-8f42-1583fc4fac7f" />
+
+**From Real World to Physical Storage**: Data models exist at multiple abstraction levels:
+- **Layer 0**: Real-world entities (people, orders, companies)
+- **Layer 1**: Application objects and data structures
+- **Layer 2**: Data representations (JSON, XML, tables, graphs)
+- **Layer 3**: Physical storage (bytes in RAM, files on disk)
+- **Layer 4**: Hardware representation (electric currents, magnetic fields, light pulses)
+
+Each layer must be efficiently mapped to the next, and the choice of data model affects these transformations significantly.
+
+---
+## The Relational Model: Tried and True
+
+<img width="2000" height="1125" alt="2 3" src="https://github.com/user-attachments/assets/226b5480-ad04-45eb-ac41-5deeeed81425" />
+
+**SQL's Dominant Paradigm**: The relational model organizes data into **relations** (tables) consisting of rows and columns. Born from 1960s-70s business data processing, its genius lies in hiding implementation details behind a clean interface. It excels at both **transactional processing** (ACID-compliant operations) and **batch processing** (large-scale data transformations).
+
+### Transactional Processing in Action
+
+<img width="2000" height="1125" alt="2 4" src="https://github.com/user-attachments/assets/7c50c8cb-83d2-4cac-9077-3d98235b533c" />
+
+**Guaranteeing Data Integrity**: Transactional processing ensures operations either complete fully or not at all. This SQL transaction shows the database's atomicity - it begins, executes multiple operations, and commits only if all succeed. The rollback example demonstrates how failures are handled gracefully without corrupting data.
+
+---
+## The Relational vs Document Model Comparison
+
+### Relational Approach: Normalized Tables
+
+<img width="481" height="635" alt="2 6" src="https://github.com/user-attachments/assets/213d4c83-0e1d-48c6-992a-da9b18cefcff" />
+
+**Bill Gates' LinkedIn Profile in SQL**: This normalized relational schema separates data into multiple tables (users, regions, industries, positions, education, contact_info) with foreign key relationships. This design minimizes redundancy and maintains data integrity but requires JOIN operations to assemble complete records.
+
+### Document Approach: Self-Contained Documents
+
+<img width="2000" height="1125" alt="2 7" src="https://github.com/user-attachments/assets/9d179468-da22-4f53-96f9-a26953f8340c" />
+
+**The Same Profile as JSON**: Document databases store related information together in a single JSON document. This provides better **locality** - all Bill Gates' data loads at once without JOINs. However, it duplicates data (region names appear in multiple documents) and makes many-to-many relationships more challenging.
+
+---
+## The Rise of NoSQL
+
+<img width="2000" height="1125" alt="2 5" src="https://github.com/user-attachments/assets/1cb9e6b2-dba6-4014-b2c2-450b7df81ae2" />
+
+**Challenging Relational Dominance**: NoSQL emerged to address specific limitations:
+- **Scalability issues** with traditional relational databases
+- **Schema flexibility** needs for rapidly evolving applications
+- **Specialized query patterns** not well-supported by SQL
+- **Distributed architectures** by default (sharding, replication)
+
+NoSQL isn't "anti-SQL" but rather "not only SQL," embracing polyglot persistence where different data stores serve different purposes.
+
+---
+## Historical Echoes: Are Document Databases New?
+
+<img width="2000" height="1125" alt="2 8" src="https://github.com/user-attachments/assets/50ff9b17-2041-418a-b3e0-ecc5a1f42bef" />
+
+**History Repeating Itself?**: Document databases surprisingly resemble the **hierarchical** and **network** models that relational databases displaced in the 1980s. The debate over nested documents (hierarchical) versus normalized tables (relational) echoes earlier database wars, with modern document databases incorporating lessons from both historical approaches.
+
+---
+
+## Key Trade-offs & Decision Framework
+
+### When to Choose Document Databases:
+- **Self-contained documents** with one-to-many relationships
+- **Rapid schema evolution** requirements
+- **Read-heavy workloads** where locality improves performance
+- **Simple access patterns** without complex joins
+- **Developer productivity** with JSON-native applications
+
+### When to Choose Relational Databases:
+- **Complex many-to-many relationships**
+- **Strong data integrity** and consistency requirements
+- **Ad-hoc querying** needs
+- **Well-understood, stable schemas**
+- **Transaction-heavy applications** (banking, e-commerce)
+
+---
