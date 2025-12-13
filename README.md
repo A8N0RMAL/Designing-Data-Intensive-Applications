@@ -214,3 +214,133 @@ NoSQL isn't "anti-SQL" but rather "not only SQL," embracing polyglot persistence
 - **Transaction-heavy applications** (banking, e-commerce)
 
 ---
+
+# MapReduce & Graph database
+
+---
+<img width="2000" height="1125" alt="3 1" src="https://github.com/user-attachments/assets/545d6957-4f60-4785-b74f-48cb839f6a82" />
+
+**Declarative vs. Imperative Paradigms**: When interacting with data models, we have two primary approaches. **Declarative** querying (like SQL) describes *what* data we want, leaving the *how* to the database system. **Imperative** querying (like IMS and CODASYL) specifies exactly *how* to retrieve the data through step-by-step instructions. The **Relational** model revolutionized data access by championing the declarative approach.
+
+---
+## Declarative Querying: The Power of Abstraction
+
+<img width="2000" height="1125" alt="3 2" src="https://github.com/user-attachments/assets/588096d5-bc53-45b0-b050-8ae1e1235b7b" />
+
+**The SQL Approach**: Declarative languages like SQL focus on the result rather than the process. This simple query `SELECT * FROM animals WHERE family = 'Sharks'` tells the database what we need without specifying how to find it. The query optimizer handles the implementation details, enabling optimizations without changing the application code.
+
+---
+## Imperative Querying: Explicit Control
+
+<img width="2000" height="1125" alt="3 3" src="https://github.com/user-attachments/assets/18e5a08b-1ffb-40e4-8a40-7f1ebfb337b0" />
+
+**The Manual Approach**: Imperative code requires explicit instructions for data retrieval. This JavaScript function manually iterates through an array, checks each item's properties, and builds a result collection. While this gives developers precise control, it ties the logic to specific data structures and prevents automatic optimizations.
+
+---
+## Declarative Patterns Beyond Databases
+
+<img width="2000" height="1125" alt="3 4" src="https://github.com/user-attachments/assets/31633975-8d3e-47ff-9b0c-f245f9d9e333" />
+
+**Declarative Power in Web Development**: The declarative paradigm extends beyond databases. Compare the verbose imperative JavaScript code (35+ lines) that manually traverses the DOM to find and style elements with the elegant CSS selector `li.selected > p { background-color: blue; }` (just 1 line). CSS declares *what* should be styled, not *how* to find and modify elements, allowing browsers to optimize rendering.
+
+---
+## Query Language Landscape
+
+<img width="2000" height="1125" alt="3 5" src="https://github.com/user-attachments/assets/db4b90a3-cf56-412a-8bb3-c8ef6eb71794" />
+
+**Diverse Tools for Different Needs**: Modern systems employ various query languages tailored to specific data models: **SQL** for relational data, **MapReduce** for distributed batch processing, **Cypher** for graph traversals, and **SPARQL** for semantic web/RDF data. Each language represents a different approach to expressing data operations.
+
+---
+## MapReduce: Distributed Processing Model
+
+<img width="2000" height="1125" alt="3 6" src="https://github.com/user-attachments/assets/e5307814-c5ba-4ec2-a17f-ecf2b4224075" />
+
+**Programming Model for Cluster Computing**: MapReduce provides a framework for processing massive datasets across distributed clusters. It abstracts the complexities of parallel execution, fault tolerance, and data distribution, allowing developers to focus on the data transformation logic through `map` and `reduce` functions.
+
+---
+## How MapReduce Works
+
+<img width="2000" height="1125" alt="3 7" src="https://github.com/user-attachments/assets/d2952316-3357-4749-8f60-34fb4513fffd" />
+
+**Distributed Processing Pipeline**: MapReduce operates in three phases: 1) **Map** - processes input key-value pairs in parallel across the cluster, 2) **Shuffle** - redistributes intermediate data by key, and 3) **Reduce** - aggregates values for each key to produce final outputs. This pattern enables horizontal scaling across thousands of machines.
+
+---
+## MapReduce Implementation Examples
+
+<img width="2000" height="1125" alt="3 8" src="https://github.com/user-attachments/assets/24e1b597-446b-4853-b86f-5dda50ff6b4a" />
+
+**From Declarative to Distributed Execution**: This comparison shows three approaches to the same analytical task (monthly shark counts). The **SQL** version is purely declarative. The **MapReduce** JavaScript implementation reveals the distributed execution pattern. MongoDB's **aggregation pipeline** offers a middle ground - declarative but aware of distributed execution constraints.
+
+---
+## Graph Data Models
+
+<img width="2000" height="1125" alt="3 9" src="https://github.com/user-attachments/assets/77284069-37dd-4d06-ae20-baed9b6b8715" />
+
+**Modeling Complex Relationships**: Graph databases excel at representing interconnected data through **vertices** (entities) and **edges** (relationships). **Cypher** serves as the declarative query language for graph databases, providing intuitive syntax for traversing relationships and discovering patterns in connected data.
+
+---
+## Real-World Graph Example
+
+<img width="2000" height="1125" alt="3 10" src="https://github.com/user-attachments/assets/8e58390a-930e-4e13-87fd-0f5f46b49ebf" />
+
+**Complex Multi-Type Relationships**: This graph models diverse entities (people, locations) and relationships (born_in, lives_in, within, married). Unlike relational models that require complex joins, graph databases naturally represent these connections, enabling efficient queries about paths and relationships across heterogeneous data types.
+
+---
+## Cypher Query Language
+
+<img width="2000" height="1125" alt="3 11" src="https://github.com/user-attachments/assets/2c7a6117-9864-4f62-a5dc-102097f3a92d" />
+
+**Declarative Graph Querying**: Cypher uses ASCII-art syntax to visualize graph patterns. The first example creates vertices and edges. The second query finds people born in the US but living in Europe by traversing `BORN_IN` and `WITHIN` edges to locate birthplaces, and `LIVES_IN` and `WITHIN` edges to find current residences - all expressed declaratively.
+
+---
+## Graph Queries in SQL
+
+<img width="2000" height="1125" alt="3 12" src="https://github.com/user-attachments/assets/18e69611-3ff8-419b-a41f-71afff14dfb0" />
+
+**Graph-Style Queries in Relational Databases**: Modern SQL supports graph-like traversals using **recursive common table expressions (CTEs)**. This complex query finds people born in the US who live in Europe by recursively following `within` edges to determine containment hierarchies, then joining on `born_in` and `lives_in` relationships. While possible, such queries highlight why specialized graph databases exist for complex relationship traversals.
+
+---
+
+## Key Insights from chapter 2
+
+### 1. **Declarative vs. Imperative Trade-offs**
+- **Declarative** (SQL, Cypher, CSS): Focus on *what*, enable optimizations, hide complexity
+- **Imperative** (Java, JavaScript, IMS): Focus on *how*, provide precise control, expose implementation
+
+### 2. **MapReduce's Hybrid Nature**
+- Sits between declarative and imperative paradigms
+- Abstracts distributed execution while allowing custom data processing logic
+- Enables massive scalability but requires more developer effort than pure SQL
+
+### 3. **Graph Models for Complex Relationships**
+- Excel at many-to-many relationships and pathfinding queries
+- Provide intuitive modeling for connected data
+- Offer specialized query languages (Cypher) optimized for traversals
+
+### 4. **Language-Data Model Fit**
+- Different query languages excel with different data structures
+- SQL → tabular/relational data
+- MapReduce → distributed batch processing
+- Cypher → connected/graph data
+- CSS → document/DOM structures
+
+### 5. **The Optimizer Advantage**
+Declarative queries enable sophisticated query optimizers that can:
+- Choose optimal execution plans
+- Leverage indexes automatically
+- Parallelize operations when possible
+- Improve performance without code changes
+
+## Practical Implications
+
+### When to Choose Each Approach:
+- **SQL/Declarative**: Business applications, ad-hoc queries, when optimization is desired
+- **Imperative APIs**: When you need absolute control, custom algorithms, specific execution order
+- **MapReduce**: Large-scale batch processing, custom aggregations across distributed data
+- **Graph Databases**: Social networks, recommendation engines, fraud detection, network analysis
+
+### Evolution of Query Capabilities:
+Modern databases increasingly blend approaches - SQL databases add graph extensions (recursive CTEs), document databases add aggregation pipelines (MongoDB), and graph databases add declarative query languages (Cypher). The trend favors declarative interfaces with the ability to drop down to imperative logic when needed.
+
+---
+
