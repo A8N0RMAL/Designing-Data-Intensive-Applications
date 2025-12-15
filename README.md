@@ -442,6 +442,132 @@ Modern databases increasingly blend approaches - SQL databases add graph extensi
 **Optimizing Compaction**: Systems like Solr provide sophisticated merge policies. `TieredMergePolicy` merges similarly-sized segments, with configurable settings like `maxMergeAtOnce` (how many segments merge together) and `segmentsPerTier` (how many segments per tier before merging).
 
 ---
+## Practical Implications
+
+### For Read-Heavy Workloads:
+Consider B-trees or LSM-trees with good caching. B-trees offer predictable performance, while LSM-trees can offer better write throughput.
+
+### For Write-Heavy Workloads:
+Log-structured storage (Bitcask-style) or LSM-trees excel by sequentializing writes. Consider append-only designs where appropriate.
+
+### For Mixed Workloads:
+Modern databases often hybridize approaches. Understand your dominant access pattern (80/20 rule) and optimize for that.
+
+### When Choosing a Database:
+Ask: What storage engine does it use? How does it handle compaction? What are its consistency/durability guarantees? How does it perform on YOUR data patterns?
+
+## 📊 Storage Engine Comparison
+
+| Aspect | Hash Indexes (Bitcask) | SSTables/LSM-Trees | B-trees |
+|--------|-----------------|-------------------|---------|
+| **Write Performance** | Excellent (append-only) | Very Good (mostly sequential) | Good (random writes) |
+| **Read Performance** | Good (O(1) lookup) | Good (O(log n) with compression) | Excellent (O(log n)) |
+| **Range Queries** | ❌ Not supported | ✅ Excellent (sorted keys) | ✅ Very Good |
+| **Memory Requirements** | High (entire index in RAM) | Moderate (sparse index) | Low (only some pages cached) |
+| **Space Amplification** | High (until compaction) | Moderate | Low |
+| **Examples** | Bitcask, Redis (in memory) | LevelDB, RocksDB, Cassandra | MySQL, PostgreSQL |
+
+---
+
+# 🎯 Storage Engines & Indexing Structures
+
+## Overview of Storage Engine Families
+
+<img width="2000" height="1125" alt="3 17" src="https://github.com/user-attachments/assets/e3901ff1-243a-463b-95d9-2bba5399b5b9" />
+
+**Two Fundamental Approaches to Data Storage**
+
+Modern databases use two primary families of storage engines with fundamentally different design philosophies:
+
+- **Log-Structured Storage Engines**: Treat the database as an append-only log of data modifications (immutable)
+- **Page-Oriented Storage Engines**: Organize data into fixed-size pages that can be modified in place (mutable)
+
+This foundational choice impacts everything from write performance to fragmentation characteristics and implementation complexity.
+
+---
+
+## B-Trees: The Industry Standard
+
+### B-Tree Architecture
+
+<img width="2000" height="1125" alt="3 19" src="https://github.com/user-attachments/assets/8feb227c-e06b-47c5-915f-4c8cb4eca8cc" />
+
+**Hierarchical Index Organization**
+
+B-trees maintain sorted key/value pairs in a balanced tree structure where:
+- Data is organized in fixed-size blocks/pages (typically 4KB)
+- Each page contains references to child pages with key ranges
+- The tree remains balanced through splitting operations
+- Most databases fit in 3-4 levels, supporting up to 256TB of data
+- Branching factor (references per page) determines tree depth
+
+### B-Tree Internal Operations
+
+<img width="2000" height="1125" alt="3 20" src="https://github.com/user-attachments/assets/81903251-3e37-4d39-b150-3bdc82a7dc00" />
+
+**Dynamic Structure Maintenance**
+
+When inserting key 334 into a leaf page already containing keys 333, 335, 337, 340, 342:
+1. The leaf page exceeds capacity and splits
+2. A new page is created with keys redistributed
+3. The parent page is updated with a new separator key (337)
+4. This ensures the tree remains balanced with O(log n) access time
+
+### B-Tree Reliability Mechanisms
+
+<img width="2000" height="1125" alt="3 21" src="https://github.com/user-attachments/assets/f7335989-18d2-4fcf-abee-49d312e71c65" />
+
+**Ensuring Durability and Crash Safety**
+
+Key reliability features in B-tree implementations:
+- **Write-Ahead Log (WAL)**: Records all modifications before applying to B-tree, enabling crash recovery
+- **Copy-on-Write Schemes**: Some implementations use immutable pages for better concurrency
+- **Short Key Names**: Reduce index size and improve cache efficiency
+- **Extra Pointers**: Add sibling pointers for faster range queries
+
+---
+
+## B-Trees vs LSM-Trees: Performance Trade-offs
+
+<img width="2000" height="1125" alt="3 22" src="https://github.com/user-attachments/assets/8eac9b85-1a56-41e1-a7a9-31fc0256136f" />
+
+**Choosing the Right Tool for Your Workload**
+
+### **B-Trees Advantages:**
+- **Faster Reads**: Direct navigation to data with predictable O(log n) access
+- **Reliable & Stable**: Mature implementations with strong consistency guarantees
+- **No Write Amplification**: Each write typically touches only affected pages
+- **Lower Latency**: Individual operations have consistent response times
+
+### **LSM-Trees Advantages:**
+- **Faster Writes**: Sequential disk writes and batched updates
+- **Better Compression**: Immutable SSTables enable efficient compression
+- **No Fragmentation**: Append-only design avoids fragmentation issues
+- **Higher Throughput**: Can sustain higher write rates under heavy loads
+
+### **Key Considerations:**
+- **Read-heavy workloads**: Prefer B-trees for predictable low-latency reads
+- **Write-heavy workloads**: LSM-trees offer better write performance
+- **Mixed workloads**: Consider access patterns and consistency requirements
+
+---
+
+### **Choosing Your Storage Engine**
+
+| **Consideration** | **B-Trees** | **LSM-Trees** |
+|-------------------|-------------|---------------|
+| **Primary Use Case** | OLTP, mixed workloads | Write-heavy, time-series |
+| **Read Performance** | Excellent, predictable | Good, may require compaction |
+| **Write Performance** | Good, random I/O | Excellent, sequential I/O |
+| **Space Amplification** | Moderate (fragmentation) | Low (better compression) |
+| **Implementation Complexity** | Moderate | High (compaction tuning) |
+
+### **Monitoring & Tuning**
+- **B-trees**: Watch fragmentation, page fill factor
+- **LSM-trees**: Monitor compaction lag, write amplification
+- **Both**: Cache hit ratios, I/O patterns, lock contention
+
+---
 
 ## 🔑 Key Chapter Insights
 
@@ -472,30 +598,7 @@ Understanding storage engines helps developers:
 - Design schemas that leverage underlying storage strengths
 - Anticipate scaling challenges
 
----
-## 🎯 Practical Implications
-
-### For Read-Heavy Workloads:
-Consider B-trees or LSM-trees with good caching. B-trees offer predictable performance, while LSM-trees can offer better write throughput.
-
-### For Write-Heavy Workloads:
-Log-structured storage (Bitcask-style) or LSM-trees excel by sequentializing writes. Consider append-only designs where appropriate.
-
-### For Mixed Workloads:
-Modern databases often hybridize approaches. Understand your dominant access pattern (80/20 rule) and optimize for that.
-
-### When Choosing a Database:
-Ask: What storage engine does it use? How does it handle compaction? What are its consistency/durability guarantees? How does it perform on YOUR data patterns?
-
-## 📊 Storage Engine Comparison
-
-| Aspect | Hash Indexes (Bitcask) | SSTables/LSM-Trees | B-trees |
-|--------|-----------------|-------------------|---------|
-| **Write Performance** | Excellent (append-only) | Very Good (mostly sequential) | Good (random writes) |
-| **Read Performance** | Good (O(1) lookup) | Good (O(log n) with compression) | Excellent (O(log n)) |
-| **Range Queries** | ❌ Not supported | ✅ Excellent (sorted keys) | ✅ Very Good |
-| **Memory Requirements** | High (entire index in RAM) | Moderate (sparse index) | Low (only some pages cached) |
-| **Space Amplification** | High (until compaction) | Moderate | Low |
-| **Examples** | Bitcask, Redis (in memory) | LevelDB, RocksDB, Cassandra | MySQL, PostgreSQL |
+> **Remember**: The best storage engine depends on your specific workload characteristics, consistency requirements, and operational constraints. Profile your application's read/write patterns before making architectural decisions.
 
 ---
+
