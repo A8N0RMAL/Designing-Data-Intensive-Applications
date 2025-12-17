@@ -602,3 +602,92 @@ Understanding storage engines helps developers:
 
 ---
 
+## 📌 1. OLTP vs. OLAP
+<img width="2000" height="1125" alt="3 26" src="https://github.com/user-attachments/assets/209d1757-d833-4c89-9261-9dcc24b7eb24" />
+
+**OLTP** (Online Transaction Processing) handles high-volume transactional operations (e.g., sales, orders).  
+**OLAP** (Online Analytical Processing) is used for complex queries and data analysis (e.g., business intelligence).
+
+---
+
+## 2. How Secondary Indexes Work
+<img width="2000" height="1125" alt="3 23" src="https://github.com/user-attachments/assets/193d5ed7-361a-41ce-8d86-2677f6828f26" />
+
+Secondary indexes (like B-trees) allow efficient lookup on non-primary key columns.  
+**Covering indexes** include all columns needed for a query, avoiding extra table lookups.
+
+---
+
+## 3. Multi-Column & Fuzzy Indexes
+<img width="2000" height="1125" alt="3 24" src="https://github.com/user-attachments/assets/c77b2e36-b82a-4ec5-a087-acbfbcafc305" />
+
+Multi-column indexes help query multiple fields simultaneously—essential for geospatial or combined-field searches.  
+**Fuzzy indexes** (like those in Apache Lucene) support full-text search with synonyms, typos, and linguistic analysis.
+
+---
+
+## 4. In-Memory Databases
+<img width="2000" height="1125" alt="3 25" src="https://github.com/user-attachments/assets/6607569a-4227-4d5d-ac52-a0c29b8b2606" />
+
+In-memory databases (e.g., Redis, VoltDB, MemSQL) store data in RAM for ultra-low latency.  
+They avoid disk I/O overhead and support advanced data structures like sets and priority queues.
+
+---
+
+## 5. The Data Warehouse
+<img width="2000" height="1125" alt="3 27" src="https://github.com/user-attachments/assets/dd44a2db-1a3f-4c19-88ee-19b42befde9b" />
+
+A **data warehouse** is a separate, read-optimized database for analytics.  
+Data is extracted from OLTP systems, transformed, and loaded (ETL) into a schema optimized for queries.
+
+---
+
+## 6. Star vs. Snowflake Schema
+<img width="2000" height="1125" alt="3 28" src="https://github.com/user-attachments/assets/eea9c950-680c-40fe-99a6-746f6ea44871" />
+
+**Star Schema**: Central fact table linked to dimension tables (denormalized).  
+**Snowflake Schema**: Normalized dimensions with sub-dimensions.  
+Star schemas are preferred for simplicity and performance in analytics.
+
+---
+
+## 7. Column-Oriented Storage
+<img width="2000" height="1125" alt="3 29" src="https://github.com/user-attachments/assets/ec5577cd-3449-4f7b-ad4d-51c9477e5a3d" />
+
+Columnar storage stores data by column rather than by row.  
+This enables faster aggregation and compression, especially useful for OLAP workloads.
+
+---
+
+## 8. Bitmap & Run-Length Encoding
+<img width="2000" height="1125" alt="3 30" src="https://github.com/user-attachments/assets/d52bc8bd-0d46-497d-b792-86cf2e1856bf" />
+
+Bitmap encoding is used in columnar storage to efficiently filter and combine multiple conditions using **bitwise operations** (AND, OR).
+
+---
+
+## 9. Aggregation: Data Cubes & Materialized Views
+<img width="2000" height="1125" alt="3 31" src="https://github.com/user-attachments/assets/d4d8057d-c5d3-45ca-aabc-7f5e8bb8ca55" />
+
+**Materialized views** store precomputed query results.  
+**Data Cubes** (OLAP cubes) are multi-dimensional grids of aggregated data, enabling fast analytical queries across dimensions.
+
+---
+
+## 🔑 Key Takeaways
+
+- **Choose indexing wisely**: B-trees for range queries, LSM-trees for write-heavy loads, specialized indexes for spatial/fuzzy search.
+- **Memory vs. Disk**: In-memory DBs offer speed; disk-based DBs offer durability and lower cost.
+- **OLTP vs. OLAP**: Different access patterns require different storage layouts (row vs. column).
+- **Data Warehousing**: Use star schemas and columnar storage for analytical queries.
+- **Aggregation**: Precompute with materialized views and data cubes for repeated complex queries.
+
+---
+
+## 🔗 References
+
+- Kleppmann, M. (2017). *Designing Data-Intensive Applications*. O'Reilly.
+- [Apache Lucene](https://lucene.apache.org/)
+- [PostGIS](https://postgis.net/)
+
+---
