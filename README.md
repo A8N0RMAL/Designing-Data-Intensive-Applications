@@ -691,3 +691,144 @@ Bitmap encoding is used in columnar storage to efficiently filter and combine mu
 - [PostGIS](https://postgis.net/)
 
 ---
+
+# 📘 Chapter 4: Encoding and Evolution
+
+## 🎯 Introduction
+
+<img width="2000" height="1125" alt="4 1" src="https://github.com/user-attachments/assets/f5308e52-1cf6-4039-a09d-15b43ff1390e" />
+
+*This chapter from "Designing Data-Intensive Applications" explores how data is encoded, stored, and evolved in distributed systems. As applications change, data formats must support both **backward** and **forward compatibility** to ensure smooth transitions during updates.*
+
+---
+
+## ❓ The Core Problem: Compatibility
+<img width="2000" height="1125" alt="4 2" src="https://github.com/user-attachments/assets/8c24d1e9-c8e5-426c-a76f-7212ef4b09e6" />
+
+*When applications evolve, data schemas often change. How do we ensure that:*
+- **Old code can read new data?** (Backward Compatibility)
+- **New code can read old data?** (Forward Compatibility)
+
+*This is especially critical during **rolling upgrades**, **blue-green deployments**, and **canary releases**, where multiple versions of an application coexist.*
+
+---
+
+## 📊 Formats for Encoding Data
+<img width="2000" height="1125" alt="4 3" src="https://github.com/user-attachments/assets/f4f9881d-e91d-4269-8aeb-4339c1d3f9a7" />
+
+*Data must be translated from in-memory structures to byte sequences for storage or transmission. This process is called **encoding (serialization)**. Common formats include:*
+- **Human-readable**: JSON, XML, CSV
+- **Binary protocols**: Apache Thrift, Protocol Buffers, Avro
+- **Language-specific**: Java Serialization (not recommended for cross-platform use)
+
+---
+
+## 🔢 Example Data Structure
+Throughout this chapter, we use a simple `Person` record for illustration:
+```json
+{
+  "userName": "Martin",
+  "favoriteNumber": 1337,
+  "interests": ["daydreaming", "hacking"]
+}
+```
+
+---
+
+## 📦 JSON & MessagePack Encoding
+<img width="2000" height="1125" alt="4 4" src="https://github.com/user-attachments/assets/79af218e-4a59-4564-bf6b-35337f0196f1" />
+
+*JSON is widely used but verbose. **MessagePack** provides a more compact binary representation of JSON-like data, reducing size while maintaining structure.*
+
+---
+
+## 🧱 Apache Thrift
+<img width="2000" height="1125" alt="4 6" src="https://github.com/user-attachments/assets/374a8b90-0d84-4f5e-bc98-c3f7d5d1bb25" />
+
+*Thrift is a binary protocol developed by Facebook. It uses an **Interface Definition Language (IDL)** to define types and services, then generates code for various languages.*
+
+**Thrift Definition:**
+```thrift
+struct Person {
+  1: required string userName,
+  2: optional i64 favoriteNumber,
+  3: optional list<string> interests
+}
+```
+
+---
+
+### Thrift BinaryProtocol
+<img width="2000" height="1125" alt="4 7" src="https://github.com/user-attachments/assets/0f987c57-a332-4981-baab-77fbbd8b62f9" />
+
+*The BinaryProtocol is Thrift's default encoding. It includes field tags and types, making it self-describing but relatively large.*
+
+---
+
+### Thrift CompactProtocol
+<img width="2000" height="1125" alt="4 8" src="https://github.com/user-attachments/assets/39608355-8557-4377-a342-4bf14a0856fc" />
+
+*CompactProtocol uses variable-length integers and packed field headers to significantly reduce payload size compared to BinaryProtocol.*
+
+---
+
+## 📡 Protocol Buffers
+<img width="2000" height="1125" alt="4 9" src="https://github.com/user-attachments/assets/6512f460-269b-4821-a58d-28e002f4f869" />
+
+*Developed by Google, Protocol Buffers (protobuf) is another binary encoding format that uses `.proto` files for schema definition.*
+
+**Protobuf Definition:**
+```protobuf
+message Person {
+  required string user_name = 1;
+  optional int64 favorite_number = 2;
+  repeated string interests = 3;
+}
+```
+*Protobuf uses **tag-number** pairs and variable-length encoding (VarInt) for efficiency.*
+
+---
+
+## 🔄 Avro
+<img width="2000" height="1125" alt="4 10" src="https://github.com/user-attachments/assets/c2dbf96f-ebd7-4fdf-8f8b-a1d5d9f31fb8" />
+
+*Avro, developed within the Hadoop ecosystem, takes a different approach: it relies on an external schema for both writing and reading data. The encoded data contains **no field tags or type information**, making it extremely compact.*
+
+**Key Features:**
+- Schema evolution is built-in
+- No field IDs in the binary payload
+- Supports dynamic typing
+- Ideal for data lakes and large-scale processing
+
+---
+
+## 📈 Comparison & Use Cases
+
+| Format | Schema Required? | Binary Size | Compatibility | Typical Use |
+|--------|------------------|-------------|---------------|-------------|
+| **JSON** | No | Large | Good (text) | APIs, configs |
+| **MessagePack** | No | Medium | Good | Compact JSON alternative |
+| **Thrift** | Yes | Small | Excellent | RPC, microservices |
+| **Protocol Buffers** | Yes | Very Small | Excellent | gRPC, storage |
+| **Avro** | Yes | Smallest | Excellent | Hadoop, Kafka, data pipelines |
+
+---
+
+## 🧠 Key Takeaways
+
+1. **Always plan for schema evolution** – systems change, and your data encoding should support that.
+2. **Choose binary formats for high-volume data** – they save space and improve performance.
+3. **Use schemas for consistency** – Thrift, Protobuf, and Avro provide clear contracts between services.
+4. **Prioritize forward & backward compatibility** – avoid breaking changes during rolling deployments.
+5. **Avoid language-specific serialization** for cross-platform or long-term storage.
+
+---
+
+## 📚 Further Reading
+- Kleppmann, M. (2017). *Designing Data-Intensive Applications*. O'Reilly Media.
+- [Apache Thrift Documentation](https://thrift.apache.org/)
+- [Protocol Buffers Guide](https://developers.google.com/protocol-buffers)
+- [Apache Avro Documentation](https://avro.apache.org/)
+
+---
+
